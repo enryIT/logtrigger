@@ -3,13 +3,13 @@
 = Download and Install =
 
 Donload source code from [http://code.google.com/p/logtrigger/downloads here].
-
+{{{
 tar zvfx logtrigger-001.tar.gz
 cd logtrigger-001.tar.gz
  
 make
 make install
-
+}}}
 = Details =
 
 Install will crate:
