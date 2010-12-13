@@ -103,7 +103,7 @@ int stringtimes(const char *string, const char *pattern)
 	return count;
 }
 
-int runscript(uci_logcheck *checklog, match_t *matchst, const char *str_ip, const char *str_mac, int fail, const char *message)
+int runscript(uci_logcheck *checklog, match_t *matchst, const char *str_ip, const char *str_mac, int fail, const char *message, file_st *file)
 {
 	pairlist_st *data = (pairlist_st *) newPairList();
 	pair_st *params;
@@ -118,7 +118,9 @@ int runscript(uci_logcheck *checklog, match_t *matchst, const char *str_ip, cons
 		addPair(data, "LT_string", matchst->string);
 	if (fail)
 		addPair(data, "LT_count", (char *)valuedup(fail));
-
+	if (file->name)
+		addPair(data, "LT_generator", file->name);
+		
 	params = (pair_st *)checklog->params->first;
 	
 	element_st *labels = (element_st *)matchst->labels->first;
@@ -233,7 +235,7 @@ void  processMsg(char *msglog, file_st *file)
 					if ( fail >= checklog->maxfail){
 						char *str_ip = matchre(message,"([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})");
 						char *str_mac = matchre(message,"([0-9a-fA-F]{2}[:-]){6}");
-						runscript(checklog, matchst, str_ip, str_mac, fail, message);
+						runscript(checklog, matchst, str_ip, str_mac, fail, message, file);
 						if (str_ip)
 							free(str_ip);
 						if (str_mac)
