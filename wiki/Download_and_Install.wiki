@@ -4,12 +4,25 @@
 
 Donload source code from [http://code.google.com/p/logtrigger/downloads here].
 
- make
- make install
+tar zvfx logtrigger-001.tar.gz
+cd logtrigger-001.tar.gz
+ 
+make
+make install
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Install will crate:
+  * /etc/logtrigger/logtrigger.conf
+  * /etc/logtrigger/scripts
+  * /etc/logtrigger/scripts/info.lua
+  * /etc/logtrigger/scripts/info.sh
+  * /etc/logtrigger/scripts/ipblock.sh
+  * /etc/logtrigger/scripts/ipblock.lua
+  * /usr/bin/logtrigger
+
+Install will chmod 775
+  * /etc/logtrigger/scripts/info.lua
+  * /etc/logtrigger/scripts/info.sh
+  * /etc/logtrigger/scripts/ipblock.sh
+  * /etc/logtrigger/scripts/ipblock.lua
