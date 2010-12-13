@@ -1,4 +1,4 @@
-#summary Phase-Deploy
+#summary Featured
 
 = Download and Install =
 
