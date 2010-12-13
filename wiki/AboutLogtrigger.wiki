@@ -1,4 +1,4 @@
-#Featured
+#summary Featured
 
 = Que es Logtrigger =
 
