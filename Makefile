@@ -47,6 +47,9 @@ define Package/logtrigger/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/etc/logtrigger
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/logtrigger $(1)/usr/bin/logtrigger
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/etc/logtrigger/info.sh $(1)/etc/logtrigger/info.sh
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/etc/logtrigger/info.lua $(1)/etc/logtrigger/info.lua
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/etc/logtrigger/ipblock.sh $(1)/etc/logtrigger/ipblock.sh
 endef
 
 $(eval $(call BuildPackage,logtrigger))
