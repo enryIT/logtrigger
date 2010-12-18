@@ -152,7 +152,7 @@ void read_conf(const char *conffile)
 	while (ret >= 0){
 		if (ret == 2 && !strcmp(reg->name, "rule")){
 			ret = getucinext(fp, reg);
-				int enable;
+				int enabled;
 				char *name;
 				char *pattern;
 				char *fields;
@@ -162,8 +162,8 @@ void read_conf(const char *conffile)
 			
 				while (ret == 3)
 				{
-					if (!strcmp(reg->name,"enable")){
-						enable=atoi(reg->value);
+					if (!strcmp(reg->name,"enabled")){
+						enabled=atoi(reg->value);
 					} else if (!strcmp(reg->name,"name")){
 						name = strndup(reg->value,strlen(reg->value));
 					} else if (!strcmp(reg->name,"pattern")){
@@ -183,8 +183,8 @@ void read_conf(const char *conffile)
 						printf("\t%s = %s\n", reg->name, reg->value);
 					ret = getucinext(fp, reg);
 				}
-				if (enable){
-					listAddlogcheck(listlogcheck, enable, name, pattern, fields, maxfail, script, params );
+				if (enabled){
+					listAddlogcheck(listlogcheck, enabled, name, pattern, fields, maxfail, script, params );
 				} else {
 					if (name) free(name);
 					if (pattern) free(pattern);

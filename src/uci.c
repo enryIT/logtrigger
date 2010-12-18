@@ -53,7 +53,7 @@ void read_conf_uci(const char *name)
 void do_logcheck(struct uci_section *s)
 {
 	struct uci_element *n;
-	bool enable=0;
+	bool enabled=0;
 	char *name=NULL;
 	char *pattern=NULL;
 	char *fields=NULL;
@@ -63,11 +63,11 @@ void do_logcheck(struct uci_section *s)
 	
 	uci_foreach_element(&s->options, n) {
 		struct uci_option *o = uci_to_option(n);
-		if (!strcmp(n->name,"enable")){
+		if (!strcmp(n->name,"enabled")){
 			if(!strcmp(o->v.string,"1")){
-				enable=1;
+				enabled=1;
 			}else{
-				enable=0;
+				enabled=0;
 			}
 		} else if (!strcmp(n->name,"name")){
 			name = malloc(strlen(o->v.string));
@@ -90,8 +90,8 @@ void do_logcheck(struct uci_section *s)
 			addPair(params, (char *)strndup(tmp, strlen(tmp)), (char *)strndup(o->v.string, strlen(o->v.string)));
 		}
 	}
-	if (enable == 1){
-		listAddlogcheck(listlogcheck, enable, name, pattern, fields, maxfail, script, params );
+	if (enabled == 1){
+		listAddlogcheck(listlogcheck, enabled, name, pattern, fields, maxfail, script, params );
 	} else {
 		if (name) free(name);
 		if (pattern) free(pattern);
