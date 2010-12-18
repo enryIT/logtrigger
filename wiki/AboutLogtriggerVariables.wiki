@@ -1,0 +1,24 @@
+LT_action, is a user var, some value that was set in config
+
+LT_type is log level type wan, error etc
+
+LT_date  is the date 
+LT_pattern is the pattern that matches this event
+
+LT_time is the time of the event
+LT_name is the rule Name, which was set in the config file
+
+LT_generator is log file where the message
+ was read from
+LT_param1 is the user var created in the config file like LT_param2 and LT_param3, these are to show how you can send some values to scripts
+
+LT_string is the string that matches in this message
+
+LT_message is a full message which has been read
+
+LT_count is how many times this message was found in your log
+
+LT_process is from where the message came from
+LT_log in this case is the log message
+ inside the script, you can use this data to take some action 
+ 
