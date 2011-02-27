@@ -15,6 +15,10 @@ typedef struct st_logcheck {
 	char *fields;
 	int maxfail;
 	char *script;
+	char *service;
+	char *host;
+	char *logfile;
+	char *id;
 	pairlist_st *params;
 	struct st_logcheck *next;
 	struct st_logcheck *prev;
@@ -22,6 +26,7 @@ typedef struct st_logcheck {
 
 typedef struct {
 	char *name;
+	char *id;
 	long lasteof;
 	int key;
 	int disabled;
@@ -39,9 +44,9 @@ typedef struct {
 
 uci_logcheck *newData();
 uci_list *listNew();
-uci_logcheck *listAddlogcheck(uci_list* list, int enable, char* name, char* pattern, char* fields, int maxfail, char *script, pairlist_st *params );
+uci_logcheck *listAddlogcheck(uci_list* list, int enable, char* name, char* pattern, char* fields, int maxfail, char *script, char *service, char *host, char *logfile, char *id, pairlist_st *params );
 
 filelist_st *newFileList();
-file_st * addFile(filelist_st *list, const char *filename, int disabled);
+file_st * addFile(filelist_st *list, const char *filename, const char *id, int disabled);
 void *freeFileList(filelist_st *list);
 #endif

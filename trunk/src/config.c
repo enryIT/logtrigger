@@ -152,12 +152,16 @@ void read_conf(const char *conffile)
 	while (ret >= 0){
 		if (ret == 2 && !strcmp(reg->name, "rule")){
 			ret = getucinext(fp, reg);
-				int enabled;
-				char *name;
-				char *pattern;
-				char *fields;
+				int enabled=0;
+				char *name=NULL;
+				char *pattern=NULL;
+				char *fields=NULL;
 				int maxfail = 0;
-				char *script;
+				char *script=NULL;
+				char *logfile=NULL;
+				char *host=NULL;
+				char *service=NULL;
+				char *id=NULL;
 				pairlist_st *params = (pairlist_st *)newPairList();
 			
 				while (ret == 3)
@@ -172,6 +176,14 @@ void read_conf(const char *conffile)
 						fields = strndup(reg->value,strlen(reg->value));
 					} else if (!strcmp(reg->name,"script")){
 						script = strndup(reg->value,strlen(reg->value));
+					} else if (!strcmp(reg->name,"service")){
+						service = strndup(reg->value,strlen(reg->value));
+					} else if (!strcmp(reg->name,"host")){
+						host = strndup(reg->value,strlen(reg->value));
+					} else if (!strcmp(reg->name,"logfile")){
+						logfile = strndup(reg->value,strlen(reg->value));
+					} else if (!strcmp(reg->name,"id")){
+						id = strndup(reg->value,strlen(reg->value));
 					} else if (!strcmp(reg->name,"maxfail")){
 						maxfail = atoi(reg->value);
 					} else {  // Add user parameters to destination script
@@ -184,12 +196,16 @@ void read_conf(const char *conffile)
 					ret = getucinext(fp, reg);
 				}
 				if (enabled){
-					listAddlogcheck(listlogcheck, enabled, name, pattern, fields, maxfail, script, params );
+					listAddlogcheck(listlogcheck, enabled, name, pattern, fields, maxfail, script, service, host, logfile, id, params );
 				} else {
 					if (name) free(name);
 					if (pattern) free(pattern);
 					if (fields) free(fields);
 					if (script) free(script);
+					if (service) free(service);
+					if (host) free(host);
+					if (logfile) free(logfile);
+					if (id) free(id);
 					if (params) params = freePairList(params);
 				}
 				if (DEBUG > 5) printf("\n");				
@@ -197,17 +213,22 @@ void read_conf(const char *conffile)
 			ret = getucinext(fp, reg);
 			int disabled = 0;
 			char *logfilename=NULL;
+			char *id=NULL;
 			while (ret == 3 && !strcmp(reg->type, "option"))
 			{
 				if (!strcmp(reg->type, "option") && !strcmp(reg->name,"file") && ret == 3)
 					logfilename = strndup(reg->value, strlen(reg->value));
+				if (!strcmp(reg->type, "option") && !strcmp(reg->name,"id") && ret == 3)
+					id = strndup(reg->value, strlen(reg->value));
 				if (!strcmp(reg->type, "option") && !strcmp(reg->name,"disabled") && ret == 3)
 					disabled = atoi(reg->value);
 				ret = getucinext(fp, reg);
 			}
-				addFile(files,logfilename,disabled);
+				addFile(files,logfilename,id,disabled);
 			if (logfilename)
 				free(logfilename);
+			if (id)
+				free(id);
 		} else {
 			ret = getucinext(fp, reg);
 		}

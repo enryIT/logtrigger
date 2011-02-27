@@ -9,6 +9,5 @@ for line in henv:lines() do
 end
 henv:close()
 if env["info"] == "1" then
-	print ("Called by rule: "..env["name"])
 	print(env["message"]);
 end

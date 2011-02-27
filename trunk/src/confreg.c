@@ -24,7 +24,7 @@ uci_list *listNew(){
 	return list;
 }
 
-uci_logcheck *listAddlogcheck(uci_list* list, int enable, char* name, char* pattern, char* fields, int maxfail, char *script, pairlist_st *params ){
+uci_logcheck *listAddlogcheck(uci_list* list, int enable, char* name, char* pattern, char* fields, int maxfail, char *script, char *service, char *host, char *logfile, char *id, pairlist_st *params ){
 	uci_logcheck *d;
 	uci_logcheck *p;
 	d = ( uci_logcheck *)malloc( sizeof( uci_logcheck ));
@@ -34,6 +34,10 @@ uci_logcheck *listAddlogcheck(uci_list* list, int enable, char* name, char* patt
 	d->fields = fields;
 	d->maxfail = maxfail;
 	d->script = script;
+	d->service = service;
+	d->host = host;
+	d->logfile = logfile;
+	d->id = id;
 	d->params = (pairlist_st *) params;
 	d->next = NULL;
 	if (list->last){
@@ -56,7 +60,7 @@ filelist_st *newFileList(){
 	return list;
 }
 
-file_st * addFile(filelist_st *list, const char *filename, int disabled)
+file_st * addFile(filelist_st *list, const char *filename, const char *id, int disabled)
 {
 	file_st *d;
 	file_st *p;
@@ -69,6 +73,11 @@ file_st * addFile(filelist_st *list, const char *filename, int disabled)
 		d->name = strndup(filename,lname);
 	else
 		d->name = NULL;
+	if (id!=NULL)
+		d->id = strndup(id,strlen(id));
+	else
+		d->id = NULL;
+		
 #ifdef OPENWRT
 	if (!strcmp(filename,"OpenWrtLogSharedMemory"))
 		d->lasteof = get_tail();
@@ -89,7 +98,7 @@ file_st * addFile(filelist_st *list, const char *filename, int disabled)
 	list->last = (struct file_st *)d;
 	list->count++;
 	if (DEBUG>4)
-		printf("(%d) Adding %s to file list\n", list->count, filename);
+		printf("(%d) Adding %s to file list with ID: %s\n", list->count, filename, id);
 	return d;
 }
 
@@ -100,6 +109,7 @@ void *freeFileList(filelist_st *list)
 		file_st * e = d;
 		d = (file_st *)d->next;
 		free(e->name);
+		free(e->id);
 		free(e);
 	}
 	free(list);

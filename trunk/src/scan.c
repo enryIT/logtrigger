@@ -214,7 +214,7 @@ match_t *match(const char *buf, uci_logcheck *checklog)
 {
 	int init = 1;
 	if (DEBUG>4)
-		printf("\t%s\n",checklog->pattern);
+		printf("\tRulePattern: \033[1m%s\033[0m\n",checklog->pattern);
 	match_t *results = initMatch(checklog);
 	char *fmt = checklog->pattern;
 	while (*fmt && *buf) {
