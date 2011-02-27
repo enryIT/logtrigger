@@ -59,6 +59,11 @@ void do_logcheck(struct uci_section *s)
 	char *fields=NULL;
 	int maxfail = 0;
 	char *script=NULL;
+	char *host=NULL;
+	char *service=NULL;
+	char *logfile=NULL;
+	char *id=NULL;
+	
 	pairlist_st *params = (pairlist_st *)newPairList();
 	
 	uci_foreach_element(&s->options, n) {
@@ -81,22 +86,35 @@ void do_logcheck(struct uci_section *s)
 		} else if (!strcmp(n->name,"script")){
 			script = malloc(strlen(o->v.string));
 			strcpy(script,o->v.string);
+/*
+		} else if (!strcmp(n->name,"service")){
+			service = strndup(o->v.string, strlen(o->v.string));
+		} else if (!strcmp(n->name,"host")){
+			host = strndup(o->v.string, strlen(o->v.string));
+		} else if (!strcmp(n->name,"logfile")){
+			logfile = strndup(o->v.string, strlen(o->v.string));
+		} else if (!strcmp(n->name,"id")){
+			id = strndup(o->v.string, strlen(o->v.string));
+*/
 		} else if (!strcmp(n->name,"maxfail")){
 			maxfail = atoi(o->v.string);
 		} else {  // Add user parameters to destination script
 			char tmp[65];
 			sprintf( tmp, "LT_%s", n->name );
-
 			addPair(params, (char *)strndup(tmp, strlen(tmp)), (char *)strndup(o->v.string, strlen(o->v.string)));
 		}
 	}
 	if (enabled == 1){
-		listAddlogcheck(listlogcheck, enabled, name, pattern, fields, maxfail, script, params );
+		listAddlogcheck(listlogcheck, enabled, name, pattern, fields, maxfail, script, service, host, logfile, id, params );
 	} else {
 		if (name) free(name);
 		if (pattern) free(pattern);
 		if (fields) free(fields);
 		if (script) free(script);
+		if (id) free(id);
+		if (logfile) free(logfile);
+		if (service) free(service);
+		if (host) free(host);
 		if (params) params = freePairList(params);
 	}
 }
@@ -107,6 +125,7 @@ void do_logfiles(struct uci_section *s)
 	int disabled = 0;
 	key_t key = 0;
 	char *logfilename=NULL;
+	char *id=NULL;
 	
 	uci_foreach_element(&s->options, n) {
 		struct uci_option *o = uci_to_option(n);
@@ -114,6 +133,8 @@ void do_logfiles(struct uci_section *s)
 			disabled = atoi(o->v.string);
 		} else if (!strcmp(n->name,"file")){
 			logfilename = strndup(o->v.string, strlen(o->v.string));
+		} else if (!strcmp(n->name,"id")){
+			id = strndup(o->v.string, strlen(o->v.string));
 		} else if (!strcmp(n->name,"key")){
 			if (logfilename)
 				free(logfilename);
@@ -124,7 +145,7 @@ void do_logfiles(struct uci_section *s)
 		printf("\t%s->%s\n", n->name, o->v.string);
 	}
 	if (disabled==0){
-		file_st * p = addFile(files,logfilename,disabled);
+		file_st * p = addFile(files,logfilename, id, disabled);
 		if(DEBUG>5)
 		printf("%s: %ld %d %d\n",p->name, p->lasteof, p->disabled, p->key);
 	} else {

@@ -210,43 +210,56 @@ void  processMsg(char *msglog, file_st *file)
 			message = strtok_r(NULL, sep, &brkt))
 		{
 			if (message == NULL) break;
-			if(DEBUG>1)
-				printf("\033[1m\nMsg: %s\033[0m\n", message);
+			if(DEBUG>1){
+				printf("\033[1m\nFrom:\t%s fileId(%s)\033[0m\n", file->name, file->id);
+				printf("\033[1mMsg :\t%s\033[0m\n", message);
+			}
 			uci_logcheck *checklog = listlogcheck->first;
 
 			while (checklog!=NULL){
-				match_t *matchst = match(message, checklog);
-				if (DEBUG >= 3)
-					showMatch(matchst);
-				if (matchst->string) 
-				{
-					char *retlog=NULL;
-					if (!strcmp(file->name,"OpenWrtLogSharedMemory"))
-						retlog = logread(0, retlog);
-					else {
-						long from = file->lasteof-32000;
-						if (from < 0 ) from = 0;
-						retlog = readNewLines(file->name, &from, retlog);
-						file->lasteof = from;
+				if (	
+					( checklog->logfile==NULL ||  !strcmp(checklog->logfile, file->name)) 
+				&&	( checklog->id==NULL || !strcmp(checklog->id, file->id))
+				){
+					if (DEBUG>5){
+						printf("\033[1mCheck\033[0m");
+						printf("\tRuleName   : \033[1m%s\033[0m\n", checklog->name);
+						printf("\tRuleLogfile: \033[1m%s\033[0m / logfile : \033[1m%s\033[0m\n", checklog->logfile, file->name);
+						printf("\tRuleId     : \033[1m%s\033[0m / logid   : \033[1m%s\033[0m\n", checklog->id, file->id);
 					}
-					int fail = stringtimes(retlog, matchst->string);
-					if (DEBUG>4)
-						printf("\tcount \033[1;1mfails(%d)\033[0m / max fails(%d)\n", fail, checklog->maxfail);
-					if ( fail >= checklog->maxfail){
-						char *str_ip = matchre(message,"([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})");
-						char *str_mac = matchre(message,"([0-9a-fA-F]{2}[:-]){6}");
-						runscript(checklog, matchst, str_ip, str_mac, fail, message, file);
-						if (str_ip)
-							free(str_ip);
-						if (str_mac)
-							free(str_mac);
+					match_t *matchst = match(message, checklog);
+					if (DEBUG > 2)
+						showMatch(matchst);
+					if (matchst->string) 
+					{
+						char *retlog=NULL;
+						if (!strcmp(file->name,"OpenWrtLogSharedMemory"))
+							retlog = logread(0, retlog);
+						else {
+							long from = file->lasteof-32000;
+							if (from < 0 ) from = 0;
+							retlog = readNewLines(file->name, &from, retlog);
+							file->lasteof = from;
+						}
+						int fail = stringtimes(retlog, matchst->string);
+						if (DEBUG>4)
+							printf("\tcount \033[1;1mfails(%d)\033[0m / max fails(%d)\n", fail, checklog->maxfail);
+						if ( fail >= checklog->maxfail){
+							char *str_ip = matchre(message,"([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})");
+							char *str_mac = matchre(message,"([0-9a-fA-F]{2}[:-]){6}");
+							runscript(checklog, matchst, str_ip, str_mac, fail, message, file);
+							if (str_ip)
+								free(str_ip);
+							if (str_mac)
+								free(str_mac);
+						}
+						if (retlog)
+							free(retlog);
+						checklog = listlogcheck->last;
 					}
-					if (retlog)
-						free(retlog);
-					checklog = listlogcheck->last;
+					matchst = matchFree(matchst);
 				}
 				checklog = checklog->next;
-				matchst = matchFree(matchst);
 			}
 		}
 
@@ -259,7 +272,7 @@ void logtrigger_main()
 	long checkfile;
 	file_st *file = NULL;
 #ifdef OPENWRT
-	addFile(files,"OpenWrtLogSharedMemory",0);
+	addFile(files,"OpenWrtLogSharedMemory",NULL,0);
 	read_conf_uci("logtrigger");
 #else
 	read_conf("/etc/logtrigger/logtrigger.conf");
